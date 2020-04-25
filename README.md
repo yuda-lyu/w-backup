@@ -10,7 +10,7 @@ A backup tool for files and folders.
 [![jsdelivr download](https://img.shields.io/jsdelivr/npm/hm/w-backup.svg)](https://www.jsdelivr.com/package/npm/w-backup)
 
 ## Documentation
-To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-backup/mZip.html).
+To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-backup/WBackup.html).
 
 ## Installation
 ### Using npm(ES6 module):

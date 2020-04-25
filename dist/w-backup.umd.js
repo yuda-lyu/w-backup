@@ -1,5 +1,5 @@
 /*!
- * w-backup v1.0.0
+ * w-backup v1.0.1
  * (c) 2018-2019 yuda-lyu(semisphere)
  * Released under the MIT License.
  */
