@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>WBackup.mjs - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="WBackup.html">WBackup</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">WBackup.mjs</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import path from 'path'
+import fs from 'fs'
+import JSON5 from 'json5'
+import dayjs from 'dayjs'
+import get from 'lodash/get'
+import each from 'lodash/each'
+import join from 'lodash/join'
+import cint from 'wsemi/src/cint.mjs'
+import isearr from 'wsemi/src/isearr.mjs'
+import isestr from 'wsemi/src/isestr.mjs'
+import pmSeries from 'wsemi/src/pmSeries.mjs'
+import fsGetFilesInFolder from 'wsemi/src/fsGetFilesInFolder.mjs'
+import fsIsFile from 'wsemi/src/fsIsFile.mjs'
+import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
+import mZip from 'w-zip/src/mZip.mjs'
+
+
+function getToday() {
+    return dayjs().format('YYYYMMDD')
+}
+
+
+function isDay(c) {
+    let ct = null
+    try {
+        ct = dayjs(c).format('YYYYMMDD')
+    }
+    catch (err) {
+        return false
+    }
+    return c === ct
+}
+
+
+async function unzip(v, today) {
+
+    //params
+    let src = get(v, 'src', null)
+    let tar = get(v, 'tar', null)
+
+    //check
+    if (!src) {
+        return Promise.reject('invalid src')
+    }
+    if (!tar) {
+        return Promise.reject('invalid tar')
+    }
+
+    //replace
+    src = src.replace('{today}', today)
+    tar = tar.replace('{today}', today)
+
+    //check
+    if (!fsIsFile(src)) {
+        return Promise.reject('src is not file')
+    }
+
+    //unzip
+    let r = await mZip.unzip(src, tar)
+
+    return r
+}
+
+
+async function zipFile(v, today) {
+
+    //params
+    let src = get(v, 'src', null)
+    let tar = get(v, 'tar', null)
+
+    //check
+    if (!src) {
+        return Promise.reject('invalid src')
+    }
+    if (!tar) {
+        return Promise.reject('invalid tar')
+    }
+
+    //replace
+    src = src.replace('{today}', today)
+    tar = tar.replace('{today}', today)
+
+    //check
+    if (!fsIsFile(src)) {
+        return Promise.reject('src is not file')
+    }
+
+    //zipFile
+    let r = await mZip.zipFile(src, tar)
+
+    return r
+}
+
+
+async function zipFolder(v, today) {
+
+    //params
+    let src = get(v, 'src', null)
+    let tar = get(v, 'tar', null)
+
+    //check
+    if (!src) {
+        return Promise.reject('invalid src')
+    }
+    if (!tar) {
+        return Promise.reject('invalid tar')
+    }
+
+    //replace
+    src = src.replace('{today}', today)
+    tar = tar.replace('{today}', today)
+
+    //check
+    if (!fsIsFolder(src)) {
+        return Promise.reject('src is not folder')
+    }
+
+    //zipFolder
+    let r = await mZip.zipFolder(src, tar)
+
+    return r
+}
+
+
+async function keepFiles(v, today) {
+
+    //params
+    let src = get(v, 'src', null)
+    let fileType = get(v, 'fileType', null)
+    let dayLimit = get(v, 'dayLimit', null)
+
+    //check
+    if (!src) {
+        return Promise.reject('invalid src')
+    }
+    if (!fsIsFolder(src)) {
+        return Promise.reject('src is not folder')
+    }
+    if (!fileType) {
+        return Promise.reject('invalid fileType')
+    }
+    if (!dayLimit) {
+        return Promise.reject('invalid dayLimit')
+    }
+    dayLimit = cint(dayLimit)
+    if (dayLimit &lt;= 0) {
+        return Promise.reject('dayLimit &lt;= 0')
+    }
+
+    //fsGetFilesInFolder
+    let rs = fsGetFilesInFolder(src)
+
+    //dNow
+    let dNow = dayjs(today, 'YYYYMMDD')
+
+    //each
+    let errs = []
+    each(rs, (v) => {
+
+        //namePure
+        let namePure = path.basename(v, `.${fileType}`)
+
+        //check
+        if (isDay(namePure)) {
+
+            //dFd
+            let dFd = dayjs(namePure, 'YYYYMMDD')
+
+            //diff
+            let i = dNow.diff(dFd, 'days')
+            if (i > dayLimit) {
+                try {
+                    fs.unlinkSync(v)
+                    //console.log('delete: ' + v)
+                }
+                catch (err) {
+                    errs.push(err)
+                }
+            }
+
+        }
+
+    })
+
+    //check
+    if (errs.length > 0) {
+        return Promise.reject(join(errs, ', '))
+    }
+
+    return 'done: ' + src
+}
+
+
+async function readSetting(fpSetting) {
+
+    //check
+    if (!fsIsFile(fpSetting)) {
+        return Promise.reject('input path is not file')
+    }
+
+    //read and parse
+    let r = null
+    try {
+
+        //readFileSync
+        let c = fs.readFileSync(fpSetting, 'utf8')
+
+        //parse
+        r = JSON5.parse(c)
+
+    }
+    catch (err) {
+        return Promise.reject(err)
+    }
+
+    return r
+}
+
+
+/**
+ * 檔案或資料夾備份
+ *
+ * @class
+ * @param {Array|String} inp 輸入設定陣列或設定檔名稱字串
+ * @returns {Promise} 回傳通訊物件，可監聽事件open、error、clientChange、execute、broadcast、deliver，可使用函數broadcast
+ * @example
+ * import fs from 'fs'
+ * import w from 'wsemi'
+ * import wb from 'w-backup'
+ *
+ * let fpSetting = './setting.json'
+ * let fpBackup = './testData/output'
+ * let fpKeep = './testData/outputList'
+ *
+ * //fsDeleteFolder
+ * w.fsDeleteFolder(fpBackup)
+ *
+ * //fsCreateFolder
+ * w.fsCreateFolder(fpKeep)
+ * fs.writeFileSync(fpKeep + '/20200101.zip', 'a1', 'utf8')
+ * fs.writeFileSync(fpKeep + '/20200115.zip', 'a2', 'utf8')
+ * fs.writeFileSync(fpKeep + '/20200201.zip', 'b1', 'utf8')
+ * fs.writeFileSync(fpKeep + '/20200215.zip', 'b2', 'utf8')
+ * fs.writeFileSync(fpKeep + '/20200301.zip', 'c1', 'utf8')
+ * fs.writeFileSync(fpKeep + '/20200315.zip', 'c2', 'utf8')
+ * fs.writeFileSync(fpKeep + '/20200401.zip', 'd1', 'utf8')
+ * fs.writeFileSync(fpKeep + '/20200415.zip', 'd2', 'utf8')
+ *
+ * //use setting.json
+ * wb(fpSetting)
+ *     .then((msg) => {
+ *         console.log(msg)
+ *     })
+ *     .catch((err) => {
+ *         console.log(err)
+ *     })
+ *
+ * // then => [
+ * //     'done: ./testData/output/20200425/test1.zip',
+ * //     'done: ./testData/output/20200425/test2.zip',
+ * //     'done: ./testData/output/20200425/test3.zip',
+ * //     'done: ./testData/output/20200425/unzip/test1',
+ * //     'done: ./testData/output/20200425/unzip/test2',
+ * //     'done: ./testData/output/20200425/unzip/test3',
+ * //     'done: ./testData/outputList',
+ * //     'finish at 20200425'
+ * // ]
+ */
+async function WBackup(inp) {
+    let s
+
+    //check
+    if (isearr(inp)) {
+        s = inp
+    }
+    else if (isestr(inp)) {
+        s = await readSetting(inp)
+    }
+    else {
+        return Promise.reject('input is not settings(Array) or json file path(String) for settings')
+    }
+
+    //today
+    let today = getToday()
+
+    let msg = []
+    try {
+
+        //pmSeries, 需循序操作
+        let r
+        await pmSeries(s, async (v) => {
+            let func = get(v, 'func', null)
+
+            if (func === 'unzip') {
+                r = await unzip(v, today)
+                msg.push(r)
+            }
+            else if (func === 'zipFile') {
+                r = await zipFile(v, today)
+                msg.push(r)
+            }
+            else if (func === 'zipFolder') {
+                r = await zipFolder(v, today)
+                msg.push(r)
+            }
+            else if (func === 'keepFiles') {
+                r = await keepFiles(v, today)
+                msg.push(r)
+            }
+            else {
+                msg.push({
+                    error: 'invalid func: ', func
+                })
+            }
+
+        })
+
+    }
+    catch (err) {
+        return Promise.reject(err)
+    }
+
+    //finish
+    let r = `finish at ${today}`
+    msg.push(r)
+
+    return msg
+}
+
+
+export default WBackup
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Sat Apr 25 2020 22:24:46 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

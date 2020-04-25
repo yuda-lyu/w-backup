@@ -1,0 +1,38 @@
+[
+  {
+    "func":"zipFile",
+    "src":"./testData/input/file1.txt",
+    "tar":"./testData/output/{today}/test1.zip",
+  },
+  {
+    "func":"zipFile",
+    "src":"./testData/input/file2(中文).txt",
+    "tar":"./testData/output/{today}/test2.zip",
+  },
+  {
+    "func":"zipFolder",
+    "src":"./testData/input/folder1",
+    "tar":"./testData/output/{today}/test3.zip",
+  },
+  {
+    "func":"unzip",
+    "src":"./testData/output/{today}/test1.zip",
+    "tar":"./testData/output/{today}/unzip/test1",
+  },
+  {
+    "func":"unzip",
+    "src":"./testData/output/{today}/test2.zip",
+    "tar":"./testData/output/{today}/unzip/test2",
+  },
+  {
+    "func":"unzip",
+    "src":"./testData/output/{today}/test3.zip",
+    "tar":"./testData/output/{today}/unzip/test3",
+  },
+  {
+    "func":"keepFiles",
+    "src":"./testData/outputList",
+    "fileType": "zip",
+    "dayLimit": 60,
+  },
+]
