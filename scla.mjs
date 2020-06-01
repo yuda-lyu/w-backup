@@ -5,6 +5,7 @@ import wb from './src/WBackup.mjs'
 let fpSetting = './setting.json'
 let fpBackup = './testData/output'
 let fpKeep = './testData/outputList'
+let fnNow = w.strleft(w.now2strp(), 8)
 
 //fsDeleteFolder
 w.fsDeleteFolder(fpBackup)
@@ -19,6 +20,7 @@ fs.writeFileSync(fpKeep + '/20200301.zip', 'c1', 'utf8')
 fs.writeFileSync(fpKeep + '/20200315.zip', 'c2', 'utf8')
 fs.writeFileSync(fpKeep + '/20200401.zip', 'd1', 'utf8')
 fs.writeFileSync(fpKeep + '/20200415.zip', 'd2', 'utf8')
+fs.writeFileSync(fpKeep + `/${fnNow}.zip`, 'd2', 'utf8')
 
 //use setting.json
 wb(fpSetting)
