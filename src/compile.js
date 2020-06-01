@@ -1,7 +1,7 @@
 let wb = require('../dist/w-backup.umd.js')
 let get = require('lodash/get')
 
-//argv, 第0個為nodejs, 第1個為wb.mjs, 之後才是參數
+//argv, 第0個為nodejs, 第1個為compile.js, 之後才是參數
 let argv = process.argv
 
 //fpSetting
@@ -23,4 +23,4 @@ else {
 }
 
 //pkg還不能打包*.mjs檔, 故需要先用rollup編譯成js
-
+// ./node_modules/.bin/pkg -t win src/compile.js --output bin/wb.exe
