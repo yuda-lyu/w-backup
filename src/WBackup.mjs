@@ -4,6 +4,7 @@ import JSON5 from 'json5'
 import dayjs from 'dayjs'
 import get from 'lodash/get'
 import each from 'lodash/each'
+import split from 'lodash/split'
 import join from 'lodash/join'
 import cint from 'wsemi/src/cint.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
@@ -12,27 +13,137 @@ import pmSeries from 'wsemi/src/pmSeries.mjs'
 import fsGetFilesInFolder from 'wsemi/src/fsGetFilesInFolder.mjs'
 import fsIsFile from 'wsemi/src/fsIsFile.mjs'
 import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
+import replace from 'wsemi/src/replace.mjs'
 import mZip from 'w-zip/src/mZip.mjs'
 
 
-function getToday() {
-    return dayjs().format('YYYYMMDD')
+function rep(c) {
+    // let c
+
+    // c = `{today}`
+    // console.log(c, rep(c))
+    // => {today} 20200617
+
+    // c = `{todayYYYY-MM-DD}`
+    // console.log(c, rep(c))
+    // => {todayYYYY-MM-DD} 2020-06-17
+
+    // c = `{yesterday}`
+    // console.log(c, rep(c))
+    // => {yesterday} 20200617
+
+    // c = `{yesterdayYYYY-MM-DD}`
+    // console.log(c, rep(c))
+    // => {yesterdayYYYY-MM-DD} 2020-06-17
+
+    // c = `api.{yesterdayYYYY-MM-DD}.log`
+    // console.log(c, rep(c))
+    // => api.{yesterdayYYYY-MM-DD}.log api.2020-06-17.log
+
+    //d
+    let d = dayjs()
+
+    function cvBasic(c, name) {
+        //若為{today},{yesterday}
+        if (c.indexOf(`{${name}}`) >= 0) {
+
+            //fmt
+            let fmt = 'YYYYMMDD'
+
+            //day
+            let day
+            if (name === 'yesterday') {
+                day = d.add(-1, 'days').format(fmt)
+            }
+            else {
+                day = d.format(fmt)
+            }
+
+            //replace
+            c = replace(c, `{${name}}`, day)
+
+        }
+        return c
+    }
+
+    function cvAdv(c, name) {
+
+        //若還有{today
+        let j = c.indexOf(`{${name}`)
+        if (j >= 0) {
+
+            //indStart, indEnd
+            let indStart = j + 1
+            let indEnd = null
+            for (let i = indStart + 5; i < c.length; i++) {
+                let r = c.substring(i, i + 1)
+                if (r === '}') {
+                    indEnd = i
+                    break
+                }
+            }
+
+            //tag, 取回例如todayYYYY-MM-DD
+            let tag = c.substring(indStart, indEnd)
+
+            //fmt, 取得例如YYYY-MM-DD
+            let fmt = replace(tag, name, '')
+
+            //day
+            let day = d.format(fmt)
+            if (name === 'yesterday') {
+                day = d.add(-1, 'days').format(fmt)
+            }
+            else {
+                day = d.format(fmt)
+            }
+
+            //split and join
+            let s = split(c, `{${tag}}`)
+            c = join(s, day)
+
+        }
+        return c
+    }
+
+    function core(c) {
+        let changed = false
+        let t = c
+
+        c = cvBasic(c, 'today')
+        changed = changed || c !== t
+        t = c
+
+        c = cvBasic(c, 'yesterday')
+        changed = changed || c !== t
+        t = c
+
+        c = cvAdv(c, 'today')
+        changed = changed || c !== t
+        t = c
+
+        c = cvAdv(c, 'yesterday')
+        changed = changed || c !== t
+
+        return {
+            c,
+            changed,
+        }
+    }
+
+    while (true) {
+        let r = core(c)
+        c = r.c
+        if (!r.changed) {
+            break
+        }
+    }
+
+    return c
 }
 
 
-function isDay(c) {
-    let ct = null
-    try {
-        ct = dayjs(c).format('YYYYMMDD')
-    }
-    catch (err) {
-        return false
-    }
-    return c === ct
-}
-
-
-async function unzip(v, today) {
+async function unzip(v) {
 
     //params
     let src = get(v, 'src', null)
@@ -46,13 +157,13 @@ async function unzip(v, today) {
         return Promise.reject('invalid tar')
     }
 
-    //replace
-    src = src.replace('{today}', today)
-    tar = tar.replace('{today}', today)
+    //rep
+    src = rep(src)
+    tar = rep(tar)
 
     //check
     if (!fsIsFile(src)) {
-        return Promise.reject('src is not file')
+        return Promise.reject('src is not file: ' + src)
     }
 
     //unzip
@@ -62,7 +173,7 @@ async function unzip(v, today) {
 }
 
 
-async function zipFile(v, today) {
+async function zipFile(v) {
 
     //params
     let src = get(v, 'src', null)
@@ -76,13 +187,13 @@ async function zipFile(v, today) {
         return Promise.reject('invalid tar')
     }
 
-    //replace
-    src = src.replace('{today}', today)
-    tar = tar.replace('{today}', today)
+    //rep
+    src = rep(src)
+    tar = rep(tar)
 
     //check
     if (!fsIsFile(src)) {
-        return Promise.reject('src is not file')
+        return Promise.reject('src is not file: ' + src)
     }
 
     //zipFile
@@ -92,7 +203,7 @@ async function zipFile(v, today) {
 }
 
 
-async function zipFolder(v, today) {
+async function zipFolder(v) {
 
     //params
     let src = get(v, 'src', null)
@@ -106,13 +217,13 @@ async function zipFolder(v, today) {
         return Promise.reject('invalid tar')
     }
 
-    //replace
-    src = src.replace('{today}', today)
-    tar = tar.replace('{today}', today)
+    //rep
+    src = rep(src)
+    tar = rep(tar)
 
     //check
     if (!fsIsFolder(src)) {
-        return Promise.reject('src is not folder')
+        return Promise.reject('src is not folder: ' + src)
     }
 
     //zipFolder
@@ -122,19 +233,20 @@ async function zipFolder(v, today) {
 }
 
 
-async function keepFiles(v, today) {
+async function keepFiles(v) {
 
     //params
     let src = get(v, 'src', null)
     let fileType = get(v, 'fileType', null)
     let dayLimit = get(v, 'dayLimit', null)
+    let fmt = get(v, 'format', null)
 
     //check
     if (!src) {
         return Promise.reject('invalid src')
     }
     if (!fsIsFolder(src)) {
-        return Promise.reject('src is not folder')
+        return Promise.reject('src is not folder: ' + src)
     }
     if (!fileType) {
         return Promise.reject('invalid fileType')
@@ -146,12 +258,15 @@ async function keepFiles(v, today) {
     if (dayLimit <= 0) {
         return Promise.reject('dayLimit <= 0')
     }
+    if (isestr(fmt)) {
+        fmt = 'YYYYMMDD'
+    }
 
     //fsGetFilesInFolder
     let rs = fsGetFilesInFolder(src)
 
     //dNow
-    let dNow = dayjs(today, 'YYYYMMDD')
+    let dNow = dayjs(dayjs().format('YYYYMMDD'), 'YYYYMMDD') //取完全日, 不含時分秒
 
     //each
     let errs = []
@@ -160,24 +275,26 @@ async function keepFiles(v, today) {
         //namePure
         let namePure = path.basename(v, `.${fileType}`)
 
-        //check
-        if (isDay(namePure)) {
+        try {
 
             //dFd
-            let dFd = dayjs(namePure, 'YYYYMMDD')
+            let dFd = dayjs(namePure, fmt)
 
             //diff
             let i = dNow.diff(dFd, 'days')
             if (i > dayLimit) {
                 try {
                     fs.unlinkSync(v)
-                    //console.log('delete: ' + v)
+                //console.log('delete: ' + v)
                 }
                 catch (err) {
                     errs.push(err)
                 }
             }
 
+        }
+        catch (err) {
+            errs.push(err)
         }
 
     })
@@ -280,9 +397,6 @@ async function WBackup(inp) {
         return Promise.reject('input is not settings(Array) or json file path(String) for settings')
     }
 
-    //today
-    let today = getToday()
-
     let msg = []
     try {
 
@@ -292,19 +406,19 @@ async function WBackup(inp) {
             let func = get(v, 'func', null)
 
             if (func === 'unzip') {
-                r = await unzip(v, today)
+                r = await unzip(v)
                 msg.push(r)
             }
             else if (func === 'zipFile') {
-                r = await zipFile(v, today)
+                r = await zipFile(v)
                 msg.push(r)
             }
             else if (func === 'zipFolder') {
-                r = await zipFolder(v, today)
+                r = await zipFolder(v)
                 msg.push(r)
             }
             else if (func === 'keepFiles') {
-                r = await keepFiles(v, today)
+                r = await keepFiles(v)
                 msg.push(r)
             }
             else {
@@ -321,7 +435,7 @@ async function WBackup(inp) {
     }
 
     //finish
-    let r = `finish at ${today}`
+    let r = `finish at ${dayjs().format('YYYY-MM-DD')}`
     msg.push(r)
 
     return msg

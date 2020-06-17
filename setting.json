@@ -2,6 +2,26 @@
   {
     "func":"zipFile",
     "src":"./testData/input/file1.txt",
+    "tar":"./testData/output/{yesterday}/test-y1.zip",
+  },
+  {
+    "func":"zipFile",
+    "src":"./testData/input/file1.txt",
+    "tar":"./testData/output/{yesterdayYYYY-MM-DD}/test-y2.zip",
+  },
+  {
+    "func":"zipFile",
+    "src":"./testData/input/file1.txt",
+    "tar":"./testData/output/{yesterdayYY-MM-DD}/test-y3.zip",
+  },
+  {
+    "func":"zipFile",
+    "src":"./testData/input/file1.txt",
+    "tar":"./testData/output/{todayYYYY-MM-DD}/test-t1.zip",
+  },
+  {
+    "func":"zipFile",
+    "src":"./testData/input/file1.txt",
     "tar":"./testData/output/{today}/test1.zip",
   },
   {
@@ -33,6 +53,7 @@
     "func":"keepFiles",
     "src":"./testData/outputList",
     "fileType": "zip",
+    "format": "YYYY-MM-DD",
     "dayLimit": 60,
   },
 ]

@@ -1,26 +1,34 @@
 import fs from 'fs'
+import dayjs from 'dayjs'
 import w from 'wsemi'
 import wb from './src/WBackup.mjs'
 
 let fpSetting = './setting.json'
 let fpBackup = './testData/output'
 let fpKeep = './testData/outputList'
-let fnNow = w.strleft(w.now2strp(), 8)
+let fmt = 'YYYY-MM-DD' //'YYYYMMDD'
+
+function getDay(n) {
+    return dayjs().add(-n, 'days').format(fmt)
+}
 
 //fsDeleteFolder
 w.fsDeleteFolder(fpBackup)
+// w.fsDeleteFolder(fpKeep)
 
 //fsCreateFolder
 w.fsCreateFolder(fpKeep)
-fs.writeFileSync(fpKeep + '/20200101.zip', 'a1', 'utf8')
-fs.writeFileSync(fpKeep + '/20200115.zip', 'a2', 'utf8')
-fs.writeFileSync(fpKeep + '/20200201.zip', 'b1', 'utf8')
-fs.writeFileSync(fpKeep + '/20200215.zip', 'b2', 'utf8')
-fs.writeFileSync(fpKeep + '/20200301.zip', 'c1', 'utf8')
-fs.writeFileSync(fpKeep + '/20200315.zip', 'c2', 'utf8')
-fs.writeFileSync(fpKeep + '/20200401.zip', 'd1', 'utf8')
-fs.writeFileSync(fpKeep + '/20200415.zip', 'd2', 'utf8')
-fs.writeFileSync(fpKeep + `/${fnNow}.zip`, 'd3', 'utf8')
+
+fs.writeFileSync(fpKeep + `/${getDay(120)}.zip`, 'a1', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(105)}.zip`, 'a2', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(90)}.zip`, 'b1', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(75)}.zip`, 'b2', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(60)}.zip`, 'c1', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(45)}.zip`, 'c2', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(30)}.zip`, 'd1', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(15)}.zip`, 'd2', 'utf8')
+fs.writeFileSync(fpKeep + `/${getDay(0)}.zip`, 'd3', 'utf8')
+
 
 //use setting.json
 wb(fpSetting)

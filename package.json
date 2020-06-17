@@ -1,13 +1,13 @@
 {
   "name": "w-backup",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A backup tool for files and folders.",
   "main": "dist/w-backup.umd.js",
   "dependencies": {
     "json5": "^2.1.3",
     "lodash": "^4.17.15",
     "w-zip": "^1.0.5",
-    "wsemi": "^1.4.41"
+    "wsemi": "^1.4.46"
   },
   "devDependencies": {
     "w-package-tools": "^1.0.25",
