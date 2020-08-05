@@ -1,5 +1,9 @@
 [
   {
+    "func":"setLogFd",
+    "tar":"./testLog",
+  },
+  {
     "func":"zipFile",
     "src":"./testData/input/file1.txt",
     "tar":"./testData/output/{yesterday}/test-y1.zip",

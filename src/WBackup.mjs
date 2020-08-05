@@ -1,3 +1,4 @@
+// import process from 'process'
 import path from 'path'
 import fs from 'fs'
 import JSON5 from 'json5'
@@ -6,6 +7,7 @@ import get from 'lodash/get'
 import each from 'lodash/each'
 import split from 'lodash/split'
 import join from 'lodash/join'
+import genPm from 'wsemi/src/genPm.mjs'
 import cint from 'wsemi/src/cint.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
@@ -14,7 +16,15 @@ import fsGetFilesInFolder from 'wsemi/src/fsGetFilesInFolder.mjs'
 import fsIsFile from 'wsemi/src/fsIsFile.mjs'
 import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
 import replace from 'wsemi/src/replace.mjs'
+import now2str from 'wsemi/src/now2str.mjs'
+import now2strp from 'wsemi/src/now2strp.mjs'
+import strright from 'wsemi/src/strright.mjs'
+import o2j from 'wsemi/src/o2j.mjs'
+import fsCreateFolder from 'wsemi/src/fsCreateFolder.mjs'
 import mZip from 'w-zip/src/mZip.mjs'
+
+
+let logFd = '' //若由排程呼叫且不給logFd絕對路徑時, 預設是位於C:\Windows\system32
 
 
 function rep(c) {
@@ -384,61 +394,107 @@ async function readSetting(fpSetting) {
  * // ]
  */
 async function WBackup(inp) {
-    let s
 
-    //check
-    if (isearr(inp)) {
-        s = inp
+    async function core(inp) {
+        let s
+
+        //check
+        if (isearr(inp)) {
+            s = inp
+        }
+        else if (isestr(inp)) {
+            s = await readSetting(inp)
+        }
+        else {
+            return Promise.reject('input is not settings(Array) or json file path(String) for settings')
+        }
+
+        let msg = []
+        try {
+
+            //pmSeries, 需循序操作
+            let r
+            await pmSeries(s, async (v) => {
+                let func = get(v, 'func', null)
+
+                if (func === 'setLogFd') {
+                    logFd = get(v, 'tar', '')
+                }
+                else if (func === 'unzip') {
+                    r = await unzip(v)
+                    msg.push(r)
+                }
+                else if (func === 'zipFile') {
+                    r = await zipFile(v)
+                    msg.push(r)
+                }
+                else if (func === 'zipFolder') {
+                    r = await zipFolder(v)
+                    msg.push(r)
+                }
+                else if (func === 'keepFiles') {
+                    r = await keepFiles(v)
+                    msg.push(r)
+                }
+                else {
+                    msg.push({
+                        error: 'invalid func: ', func
+                    })
+                }
+
+            })
+
+        }
+        catch (err) {
+            return Promise.reject(err)
+        }
+
+        //finish
+        let r = `finish at ${now2str()}`
+        msg.push(r)
+
+        return msg
     }
-    else if (isestr(inp)) {
-        s = await readSetting(inp)
-    }
-    else {
-        return Promise.reject('input is not settings(Array) or json file path(String) for settings')
-    }
 
-    let msg = []
-    try {
+    //pm
+    let pm = genPm()
 
-        //pmSeries, 需循序操作
-        let r
-        await pmSeries(s, async (v) => {
-            let func = get(v, 'func', null)
+    //core
+    core(inp)
+        .then((msg) => {
+            //console.log('then', msg)
+            pm.resolve(msg)
+        })
+        .catch((err) => {
+            //console.log('catch', err)
 
-            if (func === 'unzip') {
-                r = await unzip(v)
-                msg.push(r)
-            }
-            else if (func === 'zipFile') {
-                r = await zipFile(v)
-                msg.push(r)
-            }
-            else if (func === 'zipFolder') {
-                r = await zipFolder(v)
-                msg.push(r)
-            }
-            else if (func === 'keepFiles') {
-                r = await keepFiles(v)
-                msg.push(r)
-            }
-            else {
-                msg.push({
-                    error: 'invalid func: ', func
-                })
+            if (logFd !== '') {
+
+                //logFd
+                if (strright(logFd, 1) !== path.sep) {
+                    logFd += path.sep
+                }
+
+                //check
+                fsCreateFolder(logFd)
+
+                //fn
+                let fn = `error-${now2strp()}.log`
+                fn = logFd + fn
+                console.log('output error to: ' + path.resolve(fn))
+
+                //msg
+                let msg = o2j(err, true)
+
+                //write
+                fs.writeFileSync(fn, msg, 'utf8')
+
             }
 
+            pm.reject(err)
         })
 
-    }
-    catch (err) {
-        return Promise.reject(err)
-    }
-
-    //finish
-    let r = `finish at ${dayjs().format('YYYY-MM-DD')}`
-    msg.push(r)
-
-    return msg
+    return pm
 }
 
 
