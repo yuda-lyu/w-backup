@@ -1,7 +1,10 @@
 [
   {
-    "func":"setLogFd",
-    "tar":"./testLog",
+    "settings":{
+      "logFd":"./testLog",
+      "logWhenSuccess":true,
+      "logWhenError":true,
+    },
   },
   {
     "func":"zipFile",

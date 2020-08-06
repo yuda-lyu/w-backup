@@ -11,6 +11,7 @@ import genPm from 'wsemi/src/genPm.mjs'
 import cint from 'wsemi/src/cint.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
+import isbol from 'wsemi/src/isbol.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
 import fsGetFilesInFolder from 'wsemi/src/fsGetFilesInFolder.mjs'
 import fsIsFile from 'wsemi/src/fsIsFile.mjs'
@@ -25,6 +26,8 @@ import mZip from 'w-zip/src/mZip.mjs'
 
 
 let logFd = '' //若由排程呼叫且不給logFd絕對路徑時, 預設是位於C:\Windows\system32
+let logWhenSuccess = false
+let logWhenError = true
 
 
 function rep(c) {
@@ -415,12 +418,36 @@ async function WBackup(inp) {
             //pmSeries, 需循序操作
             let r
             await pmSeries(s, async (v) => {
+
+                //settings
+                let settings = get(v, 'settings', null)
+                if (settings !== null) {
+
+                    //logFd
+                    let _logFd = get(settings, 'logFd', null)
+                    if (isestr(_logFd)) {
+                        logFd = _logFd
+                    }
+
+                    //logWhenSuccess
+                    let _logWhenSuccess = get(settings, 'logWhenSuccess', null)
+                    if (isbol(_logWhenSuccess)) {
+                        logWhenSuccess = _logWhenSuccess
+                    }
+
+                    //logWhenError
+                    let _logWhenError = get(settings, 'logWhenError', null)
+                    if (isbol(_logWhenError)) {
+                        logWhenError = _logWhenError
+                    }
+
+                    return
+                }
+
+                //func
                 let func = get(v, 'func', null)
 
-                if (func === 'setLogFd') {
-                    logFd = get(v, 'tar', '')
-                }
-                else if (func === 'unzip') {
+                if (func === 'unzip') {
                     r = await unzip(v)
                     msg.push(r)
                 }
@@ -456,6 +483,31 @@ async function WBackup(inp) {
         return msg
     }
 
+    function logMsg(type, msg) {
+        if (logFd !== '') {
+
+            //logFd
+            if (strright(logFd, 1) !== path.sep) {
+                logFd += path.sep
+            }
+
+            //check
+            fsCreateFolder(logFd)
+
+            //fn
+            let fn = `${type}-${now2strp()}.log`
+            fn = logFd + fn
+            console.log(`output ${type} to: ${path.resolve(fn)}`)
+
+            //msg
+            msg = o2j(msg, true)
+
+            //write
+            fs.writeFileSync(fn, msg, 'utf8')
+
+        }
+    }
+
     //pm
     let pm = genPm()
 
@@ -463,34 +515,16 @@ async function WBackup(inp) {
     core(inp)
         .then((msg) => {
             //console.log('then', msg)
+            if (logWhenSuccess) {
+                logMsg('success', msg)
+            }
             pm.resolve(msg)
         })
         .catch((err) => {
             //console.log('catch', err)
-
-            if (logFd !== '') {
-
-                //logFd
-                if (strright(logFd, 1) !== path.sep) {
-                    logFd += path.sep
-                }
-
-                //check
-                fsCreateFolder(logFd)
-
-                //fn
-                let fn = `error-${now2strp()}.log`
-                fn = logFd + fn
-                console.log('output error to: ' + path.resolve(fn))
-
-                //msg
-                let msg = o2j(err, true)
-
-                //write
-                fs.writeFileSync(fn, msg, 'utf8')
-
+            if (logWhenError) {
+                logMsg('error', err)
             }
-
             pm.reject(err)
         })
 
