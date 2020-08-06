@@ -56,19 +56,24 @@ wb(fpSetting)
         console.log(err)
     })
 
-// then => [
-//     'done: ./testData/output/20200425/test1.zip',
-//     'done: ./testData/output/20200425/test2.zip',
-//     'done: ./testData/output/20200425/test3.zip',
-//     'done: ./testData/output/20200425/unzip/test1',
-//     'done: ./testData/output/20200425/unzip/test2',
-//     'done: ./testData/output/20200425/unzip/test3',
-//     'done: ./testData/outputList',
-//     'finish at 20200425'
+// then => output success to: path/to/testLog/success-20200806193318.log
+// [
+//   'done: ./testData/output/20200805/test-y1.zip',
+//   'done: ./testData/output/2020-08-05/test-y2.zip',
+//   'done: ./testData/output/20-08-05/test-y3.zip',
+//   'done: ./testData/output/2020-08-06/test-t1.zip',
+//   'done: ./testData/output/20200806/test1.zip',
+//   'done: ./testData/output/20200806/test2.zip',
+//   'done: ./testData/output/20200806/test3.zip',
+//   'done: ./testData/output/20200806/unzip/test1',
+//   'done: ./testData/output/20200806/unzip/test2',
+//   'done: ./testData/output/20200806/unzip/test3',
+//   'done: ./testData/outputList',
+//   'finish at 2020-08-06T19:33:18+08:00'
 // ]
 ```
 
-## Executable file:
+## Build an executable file:
 You can use `./src/compile.js` and `pkg` to compile `w-backup` into an executable file.
 
 > **Compile for windows:**
@@ -79,5 +84,5 @@ You can use `./src/compile.js` and `pkg` to compile `w-backup` into an executabl
 
 > **Run for windows:**
 ```
-wb.exe "setting.json"
+"path/to/wb.exe" "path/to/setting.json"
 ```
