@@ -24,5 +24,5 @@ else {
 
 
 //pkg還不能打包*.mjs檔, 故需要先用rollup編譯成js
-// node --experimental-modules --es-module-specifier-resolution=node toolg/gDistRollup.mjs
-// ./node_modules/.bin/pkg -t win src/compile.js --output bin/wb.exe
+//node --experimental-modules --es-module-specifier-resolution=node toolg/gDistRollup.mjs
+//./node_modules/.bin/pkg -t win src/compile.js --output bin/wb.exe

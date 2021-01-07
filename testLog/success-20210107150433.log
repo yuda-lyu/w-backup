@@ -1,0 +1,18 @@
+[
+  "done: ./testData/output/20210106/test-y1.zip",
+  "done: ./testData/output/2021-01-06/test-y2.zip",
+  "done: ./testData/output/21-01-06/test-y3.zip",
+  "done: ./testData/output/2021-01-07/test-t1.zip",
+  "done: ./testData/output/20210107/test1.zip",
+  "done: ./testData/output/20210107/test2.zip",
+  "done: ./testData/output/20210107/test3.zip",
+  "done: ./testData/output/20210107/unzip/test1",
+  "done: ./testData/output/20210107/unzip/test2",
+  "done: ./testData/output/20210107/unzip/test3",
+  "done: ./testData/outputList",
+  null,
+  {
+    "success": "done: ./testData/output/20210107/folder1-copyFolder"
+  },
+  "finish at 2021-01-07T15:04:33+08:00"
+]

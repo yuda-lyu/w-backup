@@ -84,5 +84,5 @@ You can use `./src/compile.js` and `pkg` to compile `w-backup` into an executabl
 
 > **Run for windows:**
 ```
-"path/to/wb.exe" "path/to/setting.json"
+path/to/wb.exe path/to/setting.json
 ```

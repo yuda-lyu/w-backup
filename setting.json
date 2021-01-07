@@ -63,4 +63,14 @@
     "format": "YYYY-MM-DD",
     "dayLimit": 60,
   },
+  {
+    "func":"copyFile",
+    "src":"./testData/input/file1.txt",
+    "tar":"./testData/output/{today}/file1-copyFile.txt",
+  },
+  {
+    "func":"copyFolder",
+    "src":"./testData/input/folder1",
+    "tar":"./testData/output/{today}/folder1-copyFolder",
+  },
 ]
