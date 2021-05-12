@@ -56,4 +56,4 @@ wb(fpSetting)
 //   'finish at 2021-01-07T15:15:21+08:00'
 // ]
 
-//node --experimental-modules --es-module-specifier-resolution=node scla.mjs
+//node --experimental-modules --es-module-specifier-resolution=node g.mjs
