@@ -23,7 +23,7 @@ npm i w-backup
 ```
 
 #### Example:
-> **Link:** [[dev source code](https://github.com/yuda-lyu/w-backup/blob/master/scla.mjs)]
+> **Link:** [[dev source code](https://github.com/yuda-lyu/w-backup/blob/master/g.mjs)]
 ```alias
 import fs from 'fs'
 import w from 'wsemi'
