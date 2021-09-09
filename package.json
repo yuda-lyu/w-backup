@@ -1,6 +1,6 @@
 {
   "name": "w-backup",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A backup tool for files and folders.",
   "main": "dist/w-backup.umd.js",
   "dependencies": {

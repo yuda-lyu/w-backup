@@ -11,8 +11,10 @@ import genPm from 'wsemi/src/genPm.mjs'
 import cint from 'wsemi/src/cint.mjs'
 import cstr from 'wsemi/src/cstr.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
+import isstr from 'wsemi/src/isstr.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
 import isbol from 'wsemi/src/isbol.mjs'
+import isint from 'wsemi/src/isint.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
 import fsGetFilesInFolder from 'wsemi/src/fsGetFilesInFolder.mjs'
 import fsIsFile from 'wsemi/src/fsIsFile.mjs'
@@ -271,8 +273,30 @@ async function zipFile(v) {
         return Promise.reject('src is not file: ' + src)
     }
 
+    //level
+    let level = get(v, 'level', 1)
+    if (!isint(level)) {
+        level = 1
+    }
+    level = cint(level)
+    if (level < 0 || level > 9) {
+        level = 1
+    }
+
+    //pw
+    let pw = get(v, 'pw', '')
+    if (!isstr(pw)) {
+        pw = ''
+    }
+
+    //opt
+    let opt = {
+        level,
+        pw,
+    }
+
     //zipFile
-    let r = await m7z.zipFile(src, tar)
+    let r = await m7z.zipFile(src, tar, opt)
 
     //ck7z
     r = ck7z(r)
@@ -339,8 +363,30 @@ async function zipFolder(v) {
         return Promise.reject('src is not folder: ' + src)
     }
 
+    //level
+    let level = get(v, 'level', 1)
+    if (!isint(level)) {
+        level = 1
+    }
+    level = cint(level)
+    if (level < 0 || level > 9) {
+        level = 1
+    }
+
+    //pw
+    let pw = get(v, 'pw', '')
+    if (!isstr(pw)) {
+        pw = ''
+    }
+
+    //opt
+    let opt = {
+        level,
+        pw,
+    }
+
     //zipFolder
-    let r = await m7z.zipFolder(src, tar)
+    let r = await m7z.zipFolder(src, tar, opt)
 
     //ck7z
     r = ck7z(r)

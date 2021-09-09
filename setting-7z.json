@@ -4,6 +4,7 @@
       "logFd":"./testLog",
       "logWhenSuccess":true,
       "logWhenError":true,
+      "path7zexe":"C:\\Program Files\\7-Zip\\7z.exe",
     },
   },
   {
@@ -15,6 +16,8 @@
     "func":"zipFile",
     "src":"./testData/input/file1.txt",
     "tar":"./testData/output/{yesterdayYYYY-MM-DD}/test-y2.7z",
+    "level":9,
+    "pw":"abc",
   },
   {
     "func":"zipFile",
