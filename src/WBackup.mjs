@@ -9,6 +9,7 @@ import split from 'lodash/split'
 import join from 'lodash/join'
 import genPm from 'wsemi/src/genPm.mjs'
 import cint from 'wsemi/src/cint.mjs'
+import cstr from 'wsemi/src/cstr.mjs'
 import isearr from 'wsemi/src/isearr.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
 import isbol from 'wsemi/src/isbol.mjs'
@@ -23,7 +24,8 @@ import strright from 'wsemi/src/strright.mjs'
 import o2j from 'wsemi/src/o2j.mjs'
 import fsCreateFolder from 'wsemi/src/fsCreateFolder.mjs'
 import fsCopyFolder from 'wsemi/src/fsCopyFolder.mjs'
-import mZip from 'w-zip/src/mZip.mjs'
+// import mZip from 'w-zip/src/mZip.mjs'
+import m7z from 'w-zip/src/m7z.mjs'
 
 
 let logFd = '' //若由排程呼叫且不給logFd絕對路徑時, 預設是位於C:\Windows\system32
@@ -157,6 +159,27 @@ function rep(c) {
 }
 
 
+function ck7z(r) {
+    let state = get(r, 'state', '')
+    state = cstr(state)
+    let msg7z = get(r, 'msg7z', '')
+    msg7z = cstr(msg7z)
+    if (isestr(msg7z)) {
+        //採用7z
+        if (msg7z.indexOf('Everything is Ok') >= 0) {
+            return state.replace('finish:', 'done:')
+        }
+        else {
+            return msg7z
+        }
+    }
+    else {
+        //採用zip
+        return r
+    }
+}
+
+
 async function unzip(v) {
 
     //params
@@ -181,7 +204,10 @@ async function unzip(v) {
     }
 
     //unzip
-    let r = await mZip.unzip(src, tar)
+    let r = await m7z.unzip(src, tar)
+
+    //ck7z
+    r = ck7z(r)
 
     return r
 }
@@ -246,7 +272,10 @@ async function zipFile(v) {
     }
 
     //zipFile
-    let r = await mZip.zipFile(src, tar)
+    let r = await m7z.zipFile(src, tar)
+
+    //ck7z
+    r = ck7z(r)
 
     return r
 }
@@ -311,7 +340,10 @@ async function zipFolder(v) {
     }
 
     //zipFolder
-    let r = await mZip.zipFolder(src, tar)
+    let r = await m7z.zipFolder(src, tar)
+
+    //ck7z
+    r = ck7z(r)
 
     return r
 }
@@ -429,7 +461,7 @@ async function readSetting(fpSetting) {
  * import w from 'wsemi'
  * import wb from 'w-backup'
  *
- * let fpSetting = './setting.json'
+ * let fpSetting = './setting-zip.json'
  * let fpBackup = './testData/output'
  * let fpKeep = './testData/outputList'
  *
@@ -510,6 +542,12 @@ async function WBackup(inp) {
                     let _logWhenError = get(settings, 'logWhenError', null)
                     if (isbol(_logWhenError)) {
                         logWhenError = _logWhenError
+                    }
+
+                    //path7zexe
+                    let _path7zexe = get(settings, 'path7zexe', null)
+                    if (fsIsFile(_path7zexe)) {
+                        m7z.setProg(_path7zexe)
                     }
 
                     return

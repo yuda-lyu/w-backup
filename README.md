@@ -29,7 +29,7 @@ import fs from 'fs'
 import w from 'wsemi'
 import wb from 'w-backup'
 
-let fpSetting = './setting.json'
+let fpSetting = './setting-zip.json'
 let fpBackup = './testData/output'
 let fpKeep = './testData/outputList'
 
