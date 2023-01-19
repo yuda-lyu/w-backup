@@ -1,17 +1,16 @@
 {
   "name": "w-backup",
-  "version": "1.0.15",
-  "description": "A backup tool for files and folders.",
+  "version": "1.0.16",
   "main": "dist/w-backup.umd.js",
   "dependencies": {
-    "json5": "^2.2.1",
+    "json5": "^2.2.3",
     "lodash": "^4.17.21",
-    "w-zip": "^1.0.14",
-    "wsemi": "^1.6.54"
+    "w-zip": "^1.0.15",
+    "wsemi": "^1.6.87"
   },
   "devDependencies": {
-    "w-package-tools": "^1.0.65",
-    "pkg": "^5.6.0"
+    "w-package-tools": "^1.0.66",
+    "pkg": "^5.8.0"
   },
   "scripts": {
     "test": "mocha --parallel --timeout 60000 --experimental-modules --es-module-specifier-resolution=node",
@@ -32,9 +31,5 @@
     "nodejs"
   ],
   "author": "yuda-lyu(semisphere)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/yuda-lyu/w-backup/issues"
-  },
-  "homepage": "https://github.com/yuda-lyu/w-backup#readme"
+  "license": "MIT"
 }
