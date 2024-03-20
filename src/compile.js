@@ -1,5 +1,13 @@
 let wb = require('../dist/w-backup.umd.js')
-let get = require('lodash/get')
+
+let get = (v, i) => {
+    let r = null
+    try {
+        r = v[i]
+    }
+    catch (err) {}
+    return r
+}
 
 //argv, 第0個為nodejs, 第1個為compile.js, 之後才是參數
 let argv = process.argv
