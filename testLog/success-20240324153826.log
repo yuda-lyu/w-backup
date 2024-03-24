@@ -1,0 +1,16 @@
+[
+  "zipFile done: ./testData/output/20240323/test-y1.7z",
+  "zipFile done: ./testData/output/2024-03-23/test-y2.7z",
+  "zipFile done: ./testData/output/24-03-23/test-y3.7z",
+  "zipFile done: ./testData/output/2024-03-24/test-t1.7z",
+  "zipFile done: ./testData/output/20240324/test1.7z",
+  "zipFile done: ./testData/output/20240324/test2.7z",
+  "zipFolder done: ./testData/output/20240324/test3.7z",
+  "unzip done: test1",
+  "unzip done: test2",
+  "unzip done: test3",
+  "keepFiles done: ./testData/outputList",
+  "copyFile done: ./testData/output/20240324/file1-copyFile.txt",
+  "copyFolder done: ./testData/output/20240324/folder1-copyFolder",
+  "finish at 2024-03-24T15:38:26+08:00"
+]
