@@ -4,7 +4,6 @@ A backup tool for files and folders.
 ![language](https://img.shields.io/badge/language-JavaScript-orange.svg) 
 [![npm version](http://img.shields.io/npm/v/w-backup.svg?style=flat)](https://npmjs.org/package/w-backup) 
 [![license](https://img.shields.io/npm/l/w-backup.svg?style=flat)](https://npmjs.org/package/w-backup) 
-[![gzip file size](http://img.badgesize.io/yuda-lyu/w-backup/master/dist/w-backup.umd.js.svg?compression=gzip)](https://github.com/yuda-lyu/w-backup)
 [![npm download](https://img.shields.io/npm/dt/w-backup.svg)](https://npmjs.org/package/w-backup) 
 [![npm download](https://img.shields.io/npm/dm/w-backup.svg)](https://npmjs.org/package/w-backup) 
 [![jsdelivr download](https://img.shields.io/jsdelivr/npm/hm/w-backup.svg)](https://www.jsdelivr.com/package/npm/w-backup)
@@ -23,7 +22,7 @@ npm i w-backup
 ```
 
 #### Example:
-> **Link:** [[dev source code](https://github.com/yuda-lyu/w-backup/blob/master/g.mjs)]
+> **Link:** [[dev source code](https://github.com/yuda-lyu/w-backup/blob/master/g-zip.mjs)]
 ```alias
 import fs from 'fs'
 import w from 'wsemi'

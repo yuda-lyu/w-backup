@@ -501,7 +501,7 @@ async function readSetting(fpSetting) {
  *
  * @class
  * @param {Array|String} inp 輸入設定陣列或設定檔名稱字串
- * @returns {Promise} 回傳通訊物件，可監聽事件open、error、clientChange、execute、broadcast、deliver，可使用函數broadcast
+ * @returns {Promise} 回傳Promise，revolve回傳成功訊息，reject回傳錯誤訊息
  * @example
  * import fs from 'fs'
  * import w from 'wsemi'
@@ -558,7 +558,7 @@ async function WBackup(inp) {
             s = await readSetting(inp)
         }
         else {
-            return Promise.reject('input is not settings(Array) or json file path(String) for settings')
+            return Promise.reject('input is not a string for path of json file or not an array for settings')
         }
 
         let msg = []
@@ -647,7 +647,9 @@ async function WBackup(inp) {
             }
 
             //check
-            fsCreateFolder(logFd)
+            if (!fsIsFolder(logFd)) {
+                fsCreateFolder(logFd)
+            }
 
             //fn
             let fn = `${type}-${now2strp()}.log`

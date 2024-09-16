@@ -13,7 +13,7 @@
     "pkg": "^5.8.1"
   },
   "scripts": {
-    "test": "mocha --parallel --timeout 60000 --experimental-modules --es-module-specifier-resolution=node",
+    "test": "mocha --parallel --timeout 60000 --experimental-modules",
     "deploy": "gh-pages -d docs"
   },
   "repository": {
