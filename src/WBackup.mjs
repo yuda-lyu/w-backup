@@ -1,10 +1,8 @@
-// import process from 'process'
 import path from 'path'
 import fs from 'fs'
 import JSON5 from 'json5'
 import dayjs from 'dayjs'
 import get from 'lodash-es/get.js'
-import each from 'lodash-es/each.js'
 import split from 'lodash-es/split.js'
 import join from 'lodash-es/join.js'
 import genPm from 'wsemi/src/genPm.mjs'
@@ -16,7 +14,6 @@ import isestr from 'wsemi/src/isestr.mjs'
 import isbol from 'wsemi/src/isbol.mjs'
 import isint from 'wsemi/src/isint.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
-import fsGetFilesInFolder from 'wsemi/src/fsGetFilesInFolder.mjs'
 import fsIsFile from 'wsemi/src/fsIsFile.mjs'
 import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
 import replace from 'wsemi/src/replace.mjs'
@@ -28,6 +25,7 @@ import fsCreateFolder from 'wsemi/src/fsCreateFolder.mjs'
 import fsCopyFolder from 'wsemi/src/fsCopyFolder.mjs'
 // import mZip from 'w-zip/src/mZip.mjs'
 import m7z from 'w-zip/src/m7z.mjs'
+import keepFiles from './keepFiles.mjs'
 
 
 let logFd = '' //若由排程呼叫且不給logFd絕對路徑時, 預設是位於C:\Windows\system32
@@ -395,79 +393,79 @@ async function zipFolder(v) {
 }
 
 
-async function keepFiles(v) {
+// async function keepFiles(v) {
 
-    //params
-    let src = get(v, 'src', null)
-    let fileType = get(v, 'fileType', null)
-    let dayLimit = get(v, 'dayLimit', null)
-    let fmt = get(v, 'format', null)
+//     //params
+//     let src = get(v, 'src', null)
+//     let fileType = get(v, 'fileType', null)
+//     let dayLimit = get(v, 'dayLimit', null)
+//     let fmt = get(v, 'format', null)
 
-    //check
-    if (!src) {
-        return Promise.reject('invalid src')
-    }
-    if (!fsIsFolder(src)) {
-        return Promise.reject('src is not folder: ' + src)
-    }
-    if (!fileType) {
-        return Promise.reject('invalid fileType')
-    }
-    if (!dayLimit) {
-        return Promise.reject('invalid dayLimit')
-    }
-    dayLimit = cint(dayLimit)
-    if (dayLimit <= 0) {
-        return Promise.reject('dayLimit <= 0')
-    }
-    if (isestr(fmt)) {
-        fmt = 'YYYYMMDD'
-    }
+//     //check
+//     if (!src) {
+//         return Promise.reject('invalid src')
+//     }
+//     if (!fsIsFolder(src)) {
+//         return Promise.reject('src is not folder: ' + src)
+//     }
+//     if (!fileType) {
+//         return Promise.reject('invalid fileType')
+//     }
+//     if (!dayLimit) {
+//         return Promise.reject('invalid dayLimit')
+//     }
+//     dayLimit = cint(dayLimit)
+//     if (dayLimit <= 0) {
+//         return Promise.reject('dayLimit <= 0')
+//     }
+//     if (isestr(fmt)) {
+//         fmt = 'YYYYMMDD'
+//     }
 
-    //fsGetFilesInFolder
-    let rs = fsGetFilesInFolder(src)
+//     //fsGetFilesInFolder
+//     let rs = fsGetFilesInFolder(src)
 
-    //dNow
-    let dNow = dayjs(dayjs().format('YYYYMMDD'), 'YYYYMMDD') //取完全日, 不含時分秒
+//     //dNow
+//     let dNow = dayjs(dayjs().format('YYYYMMDD'), 'YYYYMMDD') //取完全日, 不含時分秒
 
-    //each
-    let errs = []
-    each(rs, (v) => {
+//     //each
+//     let errs = []
+//     each(rs, (v) => {
 
-        //namePure
-        let namePure = path.basename(v, `.${fileType}`)
+//         //namePure
+//         let namePure = path.basename(v, `.${fileType}`)
 
-        try {
+//         try {
 
-            //dFd
-            let dFd = dayjs(namePure, fmt)
+//             //dFd
+//             let dFd = dayjs(namePure, fmt)
 
-            //diff
-            let i = dNow.diff(dFd, 'days')
-            if (i > dayLimit) {
-                try {
-                    fs.unlinkSync(v)
-                //console.log('delete: ' + v)
-                }
-                catch (err) {
-                    errs.push(err)
-                }
-            }
+//             //diff
+//             let i = dNow.diff(dFd, 'days')
+//             if (i > dayLimit) {
+//                 try {
+//                     fs.unlinkSync(v)
+//                 //console.log('delete: ' + v)
+//                 }
+//                 catch (err) {
+//                     errs.push(err)
+//                 }
+//             }
 
-        }
-        catch (err) {
-            errs.push(err)
-        }
+//         }
+//         catch (err) {
+//             errs.push(err)
+//         }
 
-    })
+//     })
 
-    //check
-    if (errs.length > 0) {
-        return Promise.reject(join(errs, ', '))
-    }
+//     //check
+//     if (errs.length > 0) {
+//         return Promise.reject(join(errs, ', '))
+//     }
 
-    return 'done: ' + src
-}
+//     return 'done: ' + src
+// }
 
 
 async function readSetting(fpSetting) {
@@ -612,7 +610,11 @@ async function WBackup(inp) {
                     r = await zipFolder(v)
                 }
                 else if (func === 'keepFiles') {
-                    r = await keepFiles(v)
+                    // r = await keepFiles(v)
+                    let fdSrc = get(v, 'src', null)
+                    let dayLimit = get(v, 'dayLimit', null)
+                    let format = get(v, 'format', null)
+                    r = await keepFiles(fdSrc, dayLimit, { format })
                 }
                 else if (func === 'copyFile') {
                     r = await copyFile(v)

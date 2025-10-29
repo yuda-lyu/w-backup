@@ -56,4 +56,4 @@ wb(fpSetting)
 //   'finish at 2021-01-07T15:15:21+08:00'
 // ]
 
-//node --experimental-modules g-zip.mjs
+//node g-zip.mjs

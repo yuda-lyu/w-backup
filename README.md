@@ -12,11 +12,8 @@ A backup tool for files and folders.
 To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-backup/WBackup.html).
 
 ## Installation
+
 ### Using npm(ES6 module):
-> **Note:** `w-backup` is mainly dependent on `w-zip` and `json5`.
-
-> **Note:** `w-backup` can be compiled into an executable file by using `pkg`. 
-
 ```alias
 npm i w-backup
 ```
