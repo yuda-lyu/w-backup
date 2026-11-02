@@ -1,14 +1,14 @@
 {
   "name": "w-backup",
-  "version": "1.0.46",
+  "version": "1.0.47",
   "main": "dist/w-backup.umd.js",
   "dependencies": {
     "json5": "^2.2.3",
-    "w-zip": "^1.0.51",
-    "wsemi": "^1.9.37"
+    "w-zip": "^1.0.53",
+    "wsemi": "^1.9.45"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.21",
+    "w-package-tools": "^1.1.23",
     "pkg": "^5.8.1"
   },
   "scripts": {
