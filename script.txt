@@ -6,7 +6,7 @@ node toolg/cleanFolder.mjs
 
 node toolg/gDistRollup.mjs
 
-./node_modules/.bin/pkg -t win src/compile.js --output bin/wb.exe
+node toolg/compileBySea.mjs
 
 node toolg/genDocsDist.mjs
 

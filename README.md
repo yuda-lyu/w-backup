@@ -70,11 +70,15 @@ wb(fpSetting)
 ```
 
 ## Build an executable file:
-You can use `./src/compile.js` and `pkg` to compile `w-backup` into an executable file.
+You can use `./src/compile.js` and the built-in [single executable applications (SEA)](https://nodejs.org/api/single-executable-applications.html) of Node.js to compile `w-backup` into an executable file. Run `npm i` in the repository first, which installs `postject` (devDependency) to inject the SEA blob.
+
+- Requires Node.js 20 or later (tested with Node.js 24). The executable embeds the Node.js that runs the build script, so build with the Node.js version you want to ship.
+- Windows only. The output is `bin/wb.exe`, which can be run on machines without Node.js installed.
 
 > **Compile for windows:**
 ```
-./node_modules/.bin/pkg -t win src/compile.js --output bin/wb.exe
+node toolg/gDistRollup.mjs
+node toolg/compileBySea.mjs
 
 ```
 

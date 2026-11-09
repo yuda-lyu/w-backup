@@ -1,6 +1,6 @@
 {
   "name": "w-backup",
-  "version": "1.0.52",
+  "version": "1.0.53",
   "main": "dist/w-backup.umd.js",
   "dependencies": {
     "json5": "^2.2.3",
@@ -8,8 +8,8 @@
     "wsemi": "^1.9.52"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.23",
-    "pkg": "^5.8.1"
+    "postject": "^1.0.0-alpha.6",
+    "w-package-tools": "^1.1.23"
   },
   "scripts": {
     "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",
