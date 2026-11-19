@@ -1,11 +1,11 @@
 {
   "name": "w-backup",
-  "version": "1.0.67",
+  "version": "1.0.68",
   "main": "dist/w-backup.umd.js",
   "dependencies": {
     "json5": "^2.2.3",
-    "w-zip": "^1.0.72",
-    "wsemi": "^1.9.67"
+    "w-zip": "^1.0.73",
+    "wsemi": "^1.9.68"
   },
   "devDependencies": {
     "postject": "^1.0.0-alpha.6",
