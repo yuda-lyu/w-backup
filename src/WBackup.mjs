@@ -423,7 +423,7 @@ async function zipFolder(v) {
 //     }
 
 //     //fsGetFilesInFolder
-//     let rs = fsGetFilesInFolder(src)
+//     let rs = fsGetFilesInFolder(src, { levelLimit: 1 })
 
 //     //dNow
 //     let dNow = dayjs(dayjs().format('YYYYMMDD'), 'YYYYMMDD') //取完全日, 不含時分秒

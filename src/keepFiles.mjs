@@ -34,8 +34,8 @@ async function keepFiles(fdSrc, dayLimit, opt = {}) {
     //funParseFileName
     let funParseFileName = get(opt, 'funParseFileName')
 
-    //vfps
-    let vfps = fsGetFilesInFolder(fdSrc)
+    //vfps, 僅列舉fdSrc下第1層之檔案, 不進入子資料夾(opt.levelLimit未給會窮舉全部層級, 故須明給1)
+    let vfps = fsGetFilesInFolder(fdSrc, { levelLimit: 1 })
     // console.log('vfps', vfps)
 
     //dNow

@@ -26,3 +26,14 @@
 
 - 規則:第 1 行須為 `let wb = require('../dist/w-backup.umd.js')`,且全檔僅此一行;`compileBySea.mjs` 以此為取代依據,不符即拋錯(不靜默產出未內嵌 dist 之執行檔)。
 - 測試:`test/api-compile-sea.test.mjs`(S1,以副本執行建置腳本;取代依據不符時建置失敗)。
+
+## 列舉層數(wsemi 列舉函數)
+
+### R5 呼叫 wsemi 列舉函數須明給層數,不依賴預設
+
+- 規則:`fsTreeFolder`、`fsTreeFolderWithHash`、`fsGetFilesInFolder`、`fsGetFilesWithHashInFolder`、`fsGetFoldersInFolder`(含各 `*Core`)之第 2 參數為 `opt` 物件;wsemi 1.9.80 起 `opt.levelLimit` 為有效正整數才限層,**未給即窮舉全部層級**(舊版預設 1 層),第 2 參數給了而非物件(如舊寫法之數字)拋 `invalid opt: must be an object`。本套件之呼叫點須明給 `{ levelLimit: n }`,不省略第 2 參數;`package.json` 之 `wsemi` 下限為 `^1.9.80`。
+- 語意:`keepFiles` 只處理 `fdSrc` 第 1 層之檔案(檔名即日期、超過保留天數者刪除),不進入子資料夾;`WBackup` 設定之 `keepFiles` 與 `backupFolder` 之保留清理皆經 `keepFiles`。
+- 盤點指令:`git grep -nE "\b(fsTreeFolder|fsTreeFolderWithHash|fsGetFilesInFolder|fsGetFilesWithHashInFolder|fsGetFoldersInFolder)(Core)?\s*\(" -- . ':!dist' ':!docs'`;站點全集 2 處,判準:皆含 `{ levelLimit: 1 }` 為已套,省略或數字為未套。
+  - `src/keepFiles.mjs:38`:`{ levelLimit: 1 }`,已套(活碼)。
+  - `src/WBackup.mjs:426`:註解內之舊實作範例,已改註解寫法為 `{ levelLimit: 1 }`,已套(非活碼)。
+- 測試:`test/unit-keepFiles.test.mjs`(S01~S06:第 1 層過期檔刪、第 2 與第 3 層過期檔不動、子層之非日期檔名不列入錯誤)。變異(鏡像根改回舊寫法)證據見 `sgud/exp/experience.md` 第 10 點。

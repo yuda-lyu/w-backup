@@ -13,3 +13,8 @@
 7. **舊 `pkg` 執行檔不可當對照基準**:舊 `bin/wb.exe`(2024-03 建置)含舊版原始碼,`keepFiles` 行為與現行不同(對同一設定多留 5 個舊 `.7z`),比對會得到「不同」但與打包方式無關;基準一律用 `node src/compile.js`(現行 dist)。
 8. **執行檔不依賴 PATH 上之 node**:以僅含系統目錄之 PATH 執行,zip、7z 皆與以 node 執行相同。
 9. **`npm uninstall`/`install` 會把 `package-lock.json` 頂層 `version` 同步成 `package.json` 之值**(本次 1.0.51 → 1.0.52),並把 `package.json` 補上結尾換行;皆非改版號。
+
+## 升 wsemi(列舉函數第 2 參數改為 opt)
+
+10. **wsemi 1.9.80 起列舉函數之預設由 1 層改為窮舉**:`keepFiles` 原省略 `fsGetFilesInFolder` 之第 2 參數以取第 1 層,不改則升版後會進入子資料夾、刪除其內之過期檔(2026-11-26 以 wsemi 1.9.80 實測);改為 `{ levelLimit: 1 }`(規則帳本 R5)。`test/unit-keepFiles.test.mjs` 之鑑別力以鏡像根(只複製 `src/keepFiles.mjs` 與測試檔,不建目錄連結,裸名匯入向上解析至本套件之 `node_modules`)注入 6 種變異驗證:對照(不變異)全綠;省略第 2 參數、`{}`、`{ levelLimit: 3 }` 紅 S02、S03、S06;`{ levelLimit: 2 }` 紅 S02、S06;數字 `1`(舊寫法,拋 `invalid opt`)紅 S01、S05、S06。省略第 2 參數即升版前之 `HEAD` 寫法,故亦為修前紅。
+11. **`dist/w-backup.umd.js` 內含發布時之 wsemi**:本輪不重建 `dist`(發布時自動產製),`bin/wb.exe` 亦由 `dist` 內嵌;故 `api-compile-sea` 對照之行為仍為舊 wsemi(預設 1 層)。下次發布重建 `dist` 後,因 `keepFiles` 已明給 `{ levelLimit: 1 }`,行為不變。

@@ -7,6 +7,7 @@
 | 功能 | 狀態 | 規則帳本 | 測試 |
 |---|---|---|---|
 | 備份函式庫(`src/WBackup.mjs`):依設定檔(JSON5 陣列)依序執行 zipFile、zipFolder、unzip、keepFiles、copyFile、copyFolder;`{today}`、`{yesterday}` 等日期樣板;設定檔格式見 `setting-zip.json`、`setting-7z.json` | 已完成,本輪未改 | — | `test/all.test.mjs`(占位) |
+| 保留清理(`src/keepFiles.mjs`):只處理 `fdSrc` 第 1 層之檔案,依檔名日期刪除逾 `dayLimit` 天者,子資料夾內之檔不動;呼叫 wsemi 列舉函數時明給 `{ levelLimit: 1 }`(wsemi 1.9.80 起未給即窮舉) | 已完成:2026-11-26 遷移 wsemi 1.9.80(`package.json` 之 `wsemi` 下限 `^1.9.80`) | R5 | `test/unit-keepFiles.test.mjs`(S01~S06) |
 | 命令列進入點(`src/compile.js`):第 1 個參數為設定檔路徑,缺參數印 `invalid file path for settings` | 已完成,本輪僅改註解 | R4 | `test/api-compile-sea.test.mjs`(S3、S4) |
 | 單一執行檔 `bin/wb.exe`(Node 內建 SEA + `postject`;`toolg/compileBySea.mjs`):不依賴 `pkg` | 已完成並驗證:與以 `node` 執行 `src/compile.js` 之備份結果相同(zip、7z) | R1、R2、R3 | `test/unit-no-pkg.test.mjs`、`test/api-compile-sea.test.mjs` |
 
@@ -24,5 +25,7 @@
 - 其他平台(Linux、macOS)之執行檔未支援,與先前之 `pkg -t win` 一致。
 
 ## 最近一次驗證
+
+- 2026-11-26,版本 1.0.78(尚未發布),wsemi 1.9.80、Node 24.22.1,Windows 11:遷移 wsemi 列舉函數第 2 參數(R5);新增 `test/unit-keepFiles.test.mjs`(6 案),以 6 種變異(含 1 個對照)驗證其鑑別力(經驗 10);全套 `npm test` 19 passing、0 failing、0 pending;ESLint 於改動檔 0 問題;`dist/` 與 `bin/wb.exe` 內含舊 wsemi,待下次發布重建(經驗 11)。
 
 - 2026-11-09,版本 1.0.52(尚未發布),Node 24.22.1,Windows 11:新增 `test/unit-no-pkg.test.mjs`、`test/api-compile-sea.test.mjs`;打包與備份對照結果見經驗 6。
